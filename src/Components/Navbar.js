@@ -10,45 +10,30 @@ function Navbar() {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [cooldown, setCooldown] = useState(0);
 
-  const navLinks = [
-    { label: "Beranda", to: "/" },
-    { label: "Layanan", to: "#services" },
-    { label: "Tentang", to: "#about" },
-    { label: "Ulasan", to: "#reviews" },
-    { label: "Dokter", to: "#doctors" },
-    { label: "Kontak", to: "#contact" },
-  ];
+  const toggleNav = () => setNav(!nav);
 
-  const openNav = () => setNav(!nav);
-
-  const handleChatBtnClick = () => {
+  const handleChatClick = () => {
     if (!isButtonDisabled) {
-      setCooldown(5);
-      toast.info("Sedang sibuk, silakan tunggu 5 detik.", {
-        position: "top-center",
-      });
-    } else {
-      toast.warning(`Harap tunggu ${cooldown}s sebelum mencoba lagi.`, {
-        position: "top-center",
+      setCooldown(5); // cooldown 5 detik
+      toast.info("Sedang sibuk, mohon tunggu 5 detik.", {
+        position: toast.POSITION.TOP_CENTER,
       });
     }
   };
 
-  // Countdown handler
   useEffect(() => {
     if (cooldown > 0) {
       setIsButtonDisabled(true);
-      const interval = setInterval(() => setCooldown((prev) => prev - 1), 1000);
-      return () => clearInterval(interval);
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
     } else {
       setIsButtonDisabled(false);
     }
   }, [cooldown]);
 
-  // Lock body scroll on mobile nav
+  // Lock scroll saat mobile nav terbuka
   useEffect(() => {
-    if (nav) document.body.classList.add("no-scroll");
-    else document.body.classList.remove("no-scroll");
+    document.body.style.overflow = nav ? "hidden" : "auto";
   }, [nav]);
 
   return (
@@ -57,57 +42,41 @@ function Navbar() {
         <Link to="/">Jalin <span className="navbar-sign">Sehat</span></Link>
       </h1>
 
-      {/* Desktop Links */}
+      {/* Desktop */}
       <ul className="navbar-items">
-        {navLinks.slice(0, 5).map((link) => (
-          <li key={link.label}>
-            {link.to.startsWith("/") ? (
-              <NavLink
-                to={link.to}
-                className={({ isActive }) =>
-                  isActive ? "navbar-links active" : "navbar-links"
-                }
-              >
-                {link.label}
-              </NavLink>
-            ) : (
-              <a href={link.to} className="navbar-links">{link.label}</a>
-            )}
-          </li>
-        ))}
+        <li><NavLink to="/" className={({ isActive }) => isActive ? "navbar-links active" : "navbar-links"}>Beranda</NavLink></li>
+        <li><a href="#services" className="navbar-links">Layanan</a></li>
+        <li><a href="#about" className="navbar-links">Tentang</a></li>
+        <li><a href="#reviews" className="navbar-links">Ulasan</a></li>
+        <li><a href="#doctors" className="navbar-links">Dokter</a></li>
       </ul>
 
       <button
         className="navbar-btn"
-        type="button"
         disabled={isButtonDisabled}
-        onClick={handleChatBtnClick}
-        aria-label="Tombol Live Chat"
+        onClick={handleChatClick}
       >
-        <FontAwesomeIcon icon={faCommentDots} /> {isButtonDisabled ? `Tunggu ${cooldown}s` : "Chat Sekarang"}
+        <FontAwesomeIcon icon={faCommentDots} /> {isButtonDisabled ? `Tunggu ${cooldown}s` : "Live Chat"}
       </button>
 
-      {/* Mobile Navbar */}
+      {/* Mobile */}
       <div className={`mobile-navbar ${nav ? "open-nav" : ""}`}>
-        <div onClick={openNav} className="mobile-navbar-close">
+        <div onClick={toggleNav} className="mobile-navbar-close">
           <FontAwesomeIcon icon={faXmark} className="hamb-icon" />
         </div>
         <ul className="mobile-navbar-links">
-          {navLinks.map((link) => (
-            <li key={link.label}>
-              {link.to.startsWith("/") ? (
-                <NavLink onClick={openNav} to={link.to}>{link.label}</NavLink>
-              ) : (
-                <a onClick={openNav} href={link.to}>{link.label}</a>
-              )}
-            </li>
-          ))}
+          <li><NavLink onClick={toggleNav} to="/">Beranda</NavLink></li>
+          <li><a onClick={toggleNav} href="#services">Layanan</a></li>
+          <li><a onClick={toggleNav} href="#about">Tentang</a></li>
+          <li><a onClick={toggleNav} href="#reviews">Ulasan</a></li>
+          <li><a onClick={toggleNav} href="#doctors">Dokter</a></li>
+          <li><a onClick={toggleNav} href="#contact">Kontak</a></li>
         </ul>
       </div>
 
       {/* Hamburger Icon */}
       <div className="mobile-nav">
-        <FontAwesomeIcon icon={faBars} onClick={openNav} className="hamb-icon" aria-label="Buka menu navigasi" />
+        <FontAwesomeIcon icon={faBars} onClick={toggleNav} className="hamb-icon" aria-label="Menu" />
       </div>
     </div>
   );
