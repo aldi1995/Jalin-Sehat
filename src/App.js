@@ -9,7 +9,7 @@ import Appointment from "./Pages/Appointment";
 function App() {
   return (
     <div className="App">
-      <Router basename="/Health-Plus">
+      <Router basename="https://jalin-sehat.vercel.app/Health-Plus/">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/legal" element={<Legal />} />
